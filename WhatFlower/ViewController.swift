@@ -8,11 +8,31 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    @IBOutlet weak var buttonCamera: UIBarButtonItem!
+    @IBOutlet weak var viewImage: UIImageView!
+    
+    let imagePicker = UIImagePickerController()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        imagePicker.delegate = self
+//        imagePicker.sourceType = .camera
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.allowsEditing = false
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let userPickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            viewImage.image = userPickedImage
+            
+            guard let ciimage = CIImage(image: userPickedImage) else { fatalError("Could not convert UIImage into CIImage.") }
+            
+            imagePicker.dismiss(animated: true, completion: nil)
+            
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -21,5 +41,9 @@ class ViewController: UIViewController {
     }
 
 
+    @IBAction func chooseImage(_ sender: UIBarButtonItem) {
+        
+        present(imagePicker, animated: true, completion: nil)
+    }
 }
 
