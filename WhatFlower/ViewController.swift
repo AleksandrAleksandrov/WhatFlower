@@ -9,8 +9,13 @@
 import UIKit
 import CoreML
 import Vision
+import Alamofire
+import SwiftyJSON
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    //Constants
+    let WIKI_URL = "https://en.wikipedia.org/w/api.php"
     
     @IBOutlet weak var viewImage: UIImageView!
     
@@ -46,7 +51,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             if let firstResult = result.first {
                 print("name of flower is: \(firstResult.identifier)")
-                self.navigationItem.title = firstResult.identifier.capitalized
+                let flowerName = firstResult.identifier.capitalized
+                self.navigationItem.title = flowerName
+                
+                let params : [String : String] = [
+                    "format" : "json",
+                    "action" : "query",
+                    "prop" : "extracts",
+                    "exintro" : "",
+                    "explaintext" : "",
+                    "titles" : flowerName,
+                    "indexpageids" : "",
+                    "redirects" : "1",
+                    ]
+                
+                self.getWikiPage(url: self.WIKI_URL, parameters: params)
             }
         }
         
@@ -64,6 +83,28 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         // Dispose of any resources that can be recreated.
     }
 
+    func getWikiPage(url: String, parameters: [String:String]) {
+        Alamofire.request(url, method: .get, parameters: parameters).responseJSON {
+            response in
+            if response.result.isSuccess {
+                print("Success! Got the wiki data")
+                
+                let wikiJSON : JSON = JSON(response.result.value!)
+                print(wikiJSON)
+                self.updateWikiData(json: wikiJSON)
+            } else {
+                print("Error \(response.result.error)")
+            }
+        }
+    }
+    
+    func updateWikiData(json: JSON) {
+        let pageId = json["query"]["pageids"][0].string
+       
+        let text = json["query"]["pages"][pageId!]["extract"]
+        
+        print(text)
+    }
 
     @IBAction func chooseImage(_ sender: UIBarButtonItem) {
         
