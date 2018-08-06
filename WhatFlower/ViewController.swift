@@ -10,9 +10,9 @@ import UIKit
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    @IBOutlet weak var buttonCamera: UIBarButtonItem!
     @IBOutlet weak var viewImage: UIImageView!
     
+    @IBOutlet weak var buttonCamera: UIBarButtonItem!
     let imagePicker = UIImagePickerController()
     
     override func viewDidLoad() {
@@ -25,6 +25,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+//        UIImagePickerControllerEditedImage for edited images
         if let userPickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
             viewImage.image = userPickedImage
             
