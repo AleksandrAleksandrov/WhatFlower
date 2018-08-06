@@ -19,6 +19,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     @IBOutlet weak var viewImage: UIImageView!
     
+    @IBOutlet weak var textLabel: UILabel!
     @IBOutlet weak var buttonCamera: UIBarButtonItem!
     let imagePicker = UIImagePickerController()
     
@@ -104,6 +105,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let text = json["query"]["pages"][pageId!]["extract"]
         
         print(text)
+        textLabel.text = text.string
     }
 
     @IBAction func chooseImage(_ sender: UIBarButtonItem) {
