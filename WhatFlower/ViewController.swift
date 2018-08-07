@@ -11,6 +11,7 @@ import CoreML
 import Vision
 import Alamofire
 import SwiftyJSON
+import SDWebImage
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -36,7 +37,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 //        UIImagePickerControllerEditedImage for edited images
 //        UIImagePickerControllerOriginalImage for not edited images
         if let userPickedImage = info[UIImagePickerControllerEditedImage] as? UIImage {
-            viewImage.image = userPickedImage
+//            viewImage.image = userPickedImage
             
             guard let ciImage = CIImage(image: userPickedImage) else { fatalError("Could not convert UIImage into CIImage.") }
             detect(image: ciImage)
@@ -58,12 +59,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 let params : [String : String] = [
                     "format" : "json",
                     "action" : "query",
-                    "prop" : "extracts",
+                    "prop" : "extracts|pageimages",
                     "exintro" : "",
                     "explaintext" : "",
                     "titles" : flowerName,
                     "indexpageids" : "",
                     "redirects" : "1",
+                    "pithumbsize" : "500",
                     ]
                 
                 self.getWikiPage(url: self.WIKI_URL, parameters: params)
@@ -103,6 +105,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let pageId = json["query"]["pageids"][0].string
        
         let text = json["query"]["pages"][pageId!]["extract"]
+        
+        let flowerImageURL = json["query"]["pages"][pageId!]["thumbnail"]["source"].stringValue
+        
+        self.viewImage.sd_setImage(with: URL(string: flowerImageURL))
         
         print(text)
         textLabel.text = text.string
